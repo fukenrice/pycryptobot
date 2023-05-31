@@ -34,7 +34,7 @@ class TelegramHandler:
     def _check_if_allowed(self, userid, update) -> bool:
         if str(userid) != self.authoriseduserid:
             if update is not None:
-                self.helper.send_telegram_message(update, "<b>Not authorised!</b>", new_message=False)
+                self.helper.send_telegram_message(update, "<b>Не авторизовано!</b>", new_message=False)
             # update.message.reply_text("<b>Not authorised!</b>", parse_mode="HTML")
             return False
 
@@ -43,42 +43,42 @@ class TelegramHandler:
     def get_request(self) -> InlineKeyboardMarkup:
         """control panel buttons"""
         keyboard = [
-            [InlineKeyboardButton("Notifications", callback_data="botsettings")],
+            [InlineKeyboardButton("Уведомления", callback_data="botsettings")],
             [
-                InlineKeyboardButton("\U0001F4D6 View config", callback_data="showconfig"),
-                InlineKeyboardButton("Edit config \U00002699", callback_data="editconfig"),
+                InlineKeyboardButton("\U0001F4D6 Посмотреть настройки", callback_data="showconfig"),
+                InlineKeyboardButton("Изменить настройки \U00002699", callback_data="editconfig"),
             ],
             [
-                InlineKeyboardButton("\U0001F4B0 Trade Summary", callback_data="closed"),
+                InlineKeyboardButton("\U0001F4B0 История торговли", callback_data="closed"),
             ],
             [
-                InlineKeyboardButton("\U0001F4B0 Sell", callback_data="sell"),
-                InlineKeyboardButton("\U0001FA99 Buy", callback_data="buy"),
+                InlineKeyboardButton("\U0001F4B0 Продать", callback_data="sell"),
+                InlineKeyboardButton("\U0001FA99 Купить", callback_data="buy"),
             ],
             [
-                InlineKeyboardButton("\U0001F50E Market Scanner", callback_data="scanner"),
+                InlineKeyboardButton("\U0001F50E Сканирование рынка", callback_data="scanner"),
             ],
             [
-                InlineKeyboardButton("\U0001F9FE Restart open orders", callback_data="reopen"),
+                InlineKeyboardButton("\U0001F9FE Перезапустить открытые ордера", callback_data="reopen"),
             ],
             [
-                InlineKeyboardButton("\U000023F8 pausebot(s)", callback_data="pause"),
-                InlineKeyboardButton("resumebot(s) \U0000267B", callback_data="resume"),
+                InlineKeyboardButton("\U000023F8 На паузу ботов", callback_data="pause"),
+                InlineKeyboardButton("Снять ботов с паузы \U0000267B", callback_data="resume"),
             ],
             [
-                InlineKeyboardButton("\U0001F7E2 startbot(s)", callback_data="start"),
-                InlineKeyboardButton("stopbot(s) \U0001F534", callback_data="stop"),
+                InlineKeyboardButton("\U0001F7E2 Запустить ботов", callback_data="start"),
+                InlineKeyboardButton("Остановить ботов \U0001F534", callback_data="stop"),
             ],
             [
-                InlineKeyboardButton("\U0000267B Restart active bots", callback_data="restart"),
+                InlineKeyboardButton("\U0000267B Перезапустить запущенных ботов", callback_data="restart"),
             ],
             [
-                InlineKeyboardButton("\U00002139 Bot Status", callback_data="status"),
-                InlineKeyboardButton("Margins \U0001F4C8", callback_data="margin"),
+                InlineKeyboardButton("\U00002139 Статус", callback_data="status"),
+                InlineKeyboardButton("Прибыль \U0001F4C8", callback_data="margin"),
             ],
             [
                 InlineKeyboardButton(
-                    "Cancel",
+                    "Отмена",
                     callback_data=self.helper.create_callback_data(callbacktags.CANCEL[0]),
                 )
             ],  # "cancel")],
@@ -101,14 +101,14 @@ class TelegramHandler:
 
         # Default Cancel Button
         if callback_json is not None and callback_json["c"] == callbacktags.CANCEL[0]:
-            self.helper.send_telegram_message(update, "\U00002757 User Cancelled Request", new_message=False)
+            self.helper.send_telegram_message(update, "\U00002757 Запрос отменен пользователем", new_message=False)
 
         # Default Back Button
         if callback_json is not None and callback_json["c"] == callbacktags.BACK[0]:
             key_markup = self.get_request()
             self.helper.send_telegram_message(
                 update,
-                "<b>PyCryptoBot Command Panel.</b>",
+                "<b>Панель управления ботом.</b>",
                 key_markup,
                 new_message=False,
             )
@@ -270,7 +270,7 @@ class TelegramHandler:
         elif query.data in ("scanonly", "noscan", "startmarket"):
             self.helper.send_telegram_message(
                 update,
-                "Market Scanner Started",
+                "Начинаю сканирование рынка",
                 context=context,
                 new_message=self._check_scheduled_job(update, context),
             )
@@ -308,29 +308,29 @@ class TelegramHandler:
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "Last 24Hrs",
+                    "Последние 24ч",
                     callback_data=self.helper.create_callback_data(callbacktags.TRADES, "", callbacktags.TRADES24H),  # f"stop_{query.data.replace('bot_', '')}"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    "Last 7 Days",
+                    "Последние 7 дней",
                     callback_data=self.helper.create_callback_data(callbacktags.TRADES, "", callbacktags.TRADES7D),  # f"stop_{query.data.replace('bot_', '')}"
                 ),
                 InlineKeyboardButton(
-                    "Last 14 Days",
+                    "Последние 14 дней",
                     callback_data=self.helper.create_callback_data(callbacktags.TRADES, "", callbacktags.TRADES14D),  # f"stop_{query.data.replace('bot_', '')}"
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    "Last 31 Days",
+                    "Последний 31 день",
                     callback_data=self.helper.create_callback_data(callbacktags.TRADES, "", callbacktags.TRADES1M),  # f"stop_{query.data.replace('bot_', '')}"
                 )
             ],
             [
                 InlineKeyboardButton(
-                    "All",
+                    "Все время",
                     callback_data=self.helper.create_callback_data(callbacktags.TRADES, "", callbacktags.TRADESALL),  # f"stop_{query.data.replace('bot_', '')}"
                 )
             ],
@@ -342,7 +342,7 @@ class TelegramHandler:
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
-        reply = "<b>Select trade summary period:</b>"
+        reply = "<b>Выберите период:</b>"
         self.helper.send_telegram_message(update, reply, reply_markup, context=context, new_message=False)
 
     def get_bot_options(self, update):
@@ -350,37 +350,37 @@ class TelegramHandler:
         query = update.callback_query
 
         keyboard = [
-            [InlineKeyboardButton("Stop", callback_data=f"stop_{query.data.replace('bot_', '')}")],
+            [InlineKeyboardButton("Стоп", callback_data=f"stop_{query.data.replace('bot_', '')}")],
             [
-                InlineKeyboardButton("Restart", callback_data=f"restart_{query.data.replace('bot_', '')}"),
+                InlineKeyboardButton("Перезапустить", callback_data=f"restart_{query.data.replace('bot_', '')}"),
             ],
             [
-                InlineKeyboardButton("Pause", callback_data=f"pause_{query.data.replace('bot_', '')}"),
-                InlineKeyboardButton("Resume", callback_data=f"resume_{query.data.replace('bot_', '')}"),
+                InlineKeyboardButton("Пауза", callback_data=f"pause_{query.data.replace('bot_', '')}"),
+                InlineKeyboardButton("Продолжить", callback_data=f"resume_{query.data.replace('bot_', '')}"),
             ],
-            [InlineKeyboardButton("Sell", callback_data=f"sell_{query.data.replace('bot_', '')}")],
+            [InlineKeyboardButton("Продать", callback_data=f"sell_{query.data.replace('bot_', '')}")],
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ],
         ]
         reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
-        reply = f"<b>{query.data.replace('bot_', '')} Actions:</b>"
+        reply = f"<b>{query.data.replace('bot_', '')} Действия:</b>"
         self.helper.send_telegram_message(update, reply, reply_markup, new_message=False)
 
     def get_scanner_options(self, update):
         """get scanner/screener options"""
         keyboard = [
             [
-                InlineKeyboardButton("Scan Only", callback_data="scanonly"),
-                InlineKeyboardButton("Start Bots Only", callback_data="noscan"),
+                InlineKeyboardButton("Только сканирование", callback_data="scanonly"),
+                InlineKeyboardButton("Только запуск ботов", callback_data="noscan"),
             ],
-            [InlineKeyboardButton("Scan + Start Bots", callback_data="startmarket")],
+            [InlineKeyboardButton("Сканирование + запуск ботов", callback_data="startmarket")],
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ],
@@ -388,16 +388,16 @@ class TelegramHandler:
 
         keyboard.insert(
             0,
-            [InlineKeyboardButton("Add Schedule", callback_data="schedule")]
+            [InlineKeyboardButton("Добавить расписание", callback_data="schedule")]
             if len(self.scannerSchedule.get_jobs()) == 0
             else [
-                InlineKeyboardButton("Remove Schedule", callback_data="stopmarket"),
+                InlineKeyboardButton("Убрать расписание", callback_data="stopmarket"),
             ],
         )
 
         self.helper.send_telegram_message(
             update,
-            "<b>Scanning Options.</b>",
+            "<b>Параметры сканирования.</b>",
             InlineKeyboardMarkup(keyboard, one_time_keyboard=True),
             new_message=False,
         )
@@ -407,28 +407,28 @@ class TelegramHandler:
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "Active Orders",
+                    "Активные ордера",
                     callback_data=self.helper.create_callback_data(callbacktags.MARGIN[0], "", "orders"),
                 ),
                 InlineKeyboardButton(
-                    "Active Pairs",
+                    "Активные пары",
                     callback_data=self.helper.create_callback_data(callbacktags.MARGIN[0], "", "pairs"),
                 ),
                 InlineKeyboardButton(
-                    "All",
+                    "Все",
                     callback_data=self.helper.create_callback_data(callbacktags.MARGIN[0], "", "all"),
                 ),
             ],
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ],
         ]
 
         reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
-        reply = "<b>Make your selection</b>"
+        reply = "<b>Выберите</b>"
         self.helper.send_telegram_message(update, reply, reply_markup, context=context, new_message=False)
 
     def ask_exchange_options(self, update: Update, callback: str = "ex"):
@@ -450,7 +450,7 @@ class TelegramHandler:
         if callback != callbacktags.SCREENER:
             buttons.append(
                 InlineKeyboardButton(
-                    "Screener",
+                    "Скринер",
                     callback_data=self.helper.create_callback_data(callback, "screener"),  # f"{callback}_screener"
                 )
             )
@@ -466,7 +466,7 @@ class TelegramHandler:
             keyboard.append(
                 [
                     InlineKeyboardButton(
-                        "Reload all running bots",
+                        "Перезагрузить всех запущенных ботов",
                         callback_data=self.helper.create_callback_data(callbacktags.RELOADCONFIG[0]),  # "reload_config"
                     )
                 ]
@@ -474,7 +474,7 @@ class TelegramHandler:
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ]
@@ -482,7 +482,7 @@ class TelegramHandler:
 
         reply_markup = InlineKeyboardMarkup(keyboard)
 
-        self.helper.send_telegram_message(update, "<b>Select exchange</b>", reply_markup, new_message=False)
+        self.helper.send_telegram_message(update, "<b>Выберите биржу</b>", reply_markup, new_message=False)
 
     def ask_percent_value(self, update, typestr):
         """get button to increase values"""
@@ -520,7 +520,7 @@ class TelegramHandler:
             ],
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Done",
+                    "\U000025C0 Готово",
                     callback_data=self.helper.create_callback_data(callbacktags.DONE[0], exchange, prop),
                 )
             ],
@@ -550,20 +550,20 @@ class TelegramHandler:
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "Confirm",
+                    "Подтвердить",
                     callback_data=self.helper.create_callback_data(trade_choice[0], "", query.data),
                 )  # f"confirm_{query.data}"),
             ],
             [
                 InlineKeyboardButton(
-                    "Cancel",
+                    "Отмена",
                     callback_data=self.helper.create_callback_data(callbacktags.CANCEL[0]),
                 )
             ],  # )],
         ]
 
         reply_markup = InlineKeyboardMarkup(keyboard, one_time_keyboard=True)
-        reply = f"<b>Are you sure you want to {trade_choice[1]}?</b>"
+        reply = f"<b>Вы уверены, что хотите {trade_choice[1]}?</b>"
         self.helper.send_telegram_message(update, reply, reply_markup, new_message=False)
 
     def _check_scheduled_job(self, update=None, context=None) -> bool:
@@ -584,7 +584,7 @@ class TelegramHandler:
                 misfire_grace_time=10,
             )
 
-            reply = "<b>Scan job schedule created to run every " f"{self.helper.config['scanner']['autoscandelay']} hour(s)</b> \u2705"
+            reply = "<b>Расписание на сканирование установлено запускаться каждые " f"{self.helper.config['scanner']['autoscandelay']} час(ов)</b> \u2705"
             self.helper.send_telegram_message(update, reply, context=context, new_message=False)
             return True
         return False
@@ -594,10 +594,10 @@ class TelegramHandler:
         reply = ""
         if len(self.scannerSchedule.get_jobs()) > 0:
             self.scannerSchedule.remove_all_jobs()
-            reply = "<b>Scan job schedule has been removed</b> \u2705"
+            reply = "<b>Расписание сканирования убрано</b> \u2705"
 
         else:
-            reply = "<b>No scheduled job found!</b>"
+            reply = "<b>Расписание сканирования не найдено!</b>"
 
         self.helper.send_telegram_message(update, reply, context=context, new_message=False)
 

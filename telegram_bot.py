@@ -71,7 +71,7 @@ class TelegramBotBase:
 
     def _check_if_allowed(self, userid, update) -> bool:
         if str(userid) != self.userid:
-            update.message.reply_text("<b>Not authorised!</b>", parse_mode="HTML")
+            update.message.reply_text("<b>Не авторизовано!</b>", parse_mode="HTML")
             return False
 
         return True
@@ -167,14 +167,14 @@ class TelegramBot(TelegramBotBase):
         self.exchange = ""
         self.overrides = ""
         self.helper.send_telegram_message(
-            update, "Select the exchange:", markup, context=context
+            update, "Выберите биржу:", markup, context=context
         )
 
     def _answer_which_exchange(self, update, context) -> bool:
         """start bot validate exchange and ask which market/pair"""
-        if update.message.text.lower() == "cancel":
+        if update.message.text.lower() == "отмена":
             update.message.reply_text(
-                "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
+                "Операция отменена", reply_markup=ReplyKeyboardRemove()
             )
             return ConversationHandler.END
 
@@ -192,7 +192,7 @@ class TelegramBot(TelegramBotBase):
         else:
             if self.exchange == "":
                 self.helper.send_telegram_message(
-                    update, "Invalid Exchange Entered!.", context=context
+                    update, "Неверно введена биржа!.", context=context
                 )
                 return False
         return True
@@ -200,13 +200,13 @@ class TelegramBot(TelegramBotBase):
     def _question_which_pair(self, update, context):
         self.market = ""
         self.helper.send_telegram_message(
-            update, "Which market/pair is this for?", ReplyKeyboardRemove(), context
+            update, "Для какого рынка/пары?", ReplyKeyboardRemove(), context
         )
 
     def _answer_which_pair(self, update, context) -> bool:
-        if update.message.text.lower() == "cancel":
+        if update.message.text.lower() == "отмена":
             self.helper.send_telegram_message(
-                update, "Operation Cancelled", ReplyKeyboardRemove(), context
+                update, "Операция отменена", ReplyKeyboardRemove(), context
             )
             return ConversationHandler.END
 
@@ -214,14 +214,14 @@ class TelegramBot(TelegramBotBase):
             p = re.compile(r"^[0-9A-Z]{1,20}\-[1-9A-Z]{2,5}$")
             if not p.match(update.message.text):
                 self.helper.send_telegram_message(
-                    update, "Invalid market format", ReplyKeyboardRemove(), context
+                    update, "Неверный формат рынка", ReplyKeyboardRemove(), context
                 )
                 return False
         elif self.exchange == "binance":
             p = re.compile(r"^[A-Z0-9]{4,25}$")
             if not p.match(update.message.text):
                 self.helper.send_telegram_message(
-                    update, "Invalid market format.", ReplyKeyboardRemove(), context
+                    update, "Неверный формат рынка.", ReplyKeyboardRemove(), context
                 )
                 return False
 
@@ -233,20 +233,20 @@ class TelegramBot(TelegramBotBase):
     def setcommands(self, update, context) -> None:
         """Set bot commands in telegram"""
         command = [
-            BotCommand("controlpanel", "show command buttons"),
-            BotCommand("cleandata", "clean JSON data files"),
-            BotCommand("addexception", "add pair to scanner exception list"),
-            BotCommand("removeexception", "remove pair from scanner exception list"),
+            BotCommand("controlpanel", "показать панель управления"),
+            BotCommand("cleandata", "очистить JSON файлы с данными"),
+            BotCommand("addexception", "добавить пару в список исключений для сканера"),
+            BotCommand("removeexception", "убрать пару из списка исключений для сканера"),
             BotCommand(
-                "scanner", "start auto scan high volume markets and start bots"
+                "scanner", "начать автоматическое сканирование ликвидных рынков и запустить всех"
             ),
             # BotCommand("stopscanner", "stop auto scan high volume markets"),
-            BotCommand("addnew", "add and start a new bot"),
+            BotCommand("addnew", "добавить и запустить нового бота"),
             # BotCommand("deletebot", "delete bot from startbot list"),
-            BotCommand("margins", "show margins for all open trades"),
-            BotCommand("trades", "show closed trades"),
-            BotCommand("stats", "show exchange stats for market/pair"),
-            BotCommand("help", "show help text")
+            BotCommand("margins", "показать результаты всех открытых сделок"),
+            BotCommand("trades", "показать закрытые сделки"),
+            BotCommand("stats", "отобразить статистику рынка"),
+            BotCommand("help", "отобразить help")
             # BotCommand("showinfo", "show all running bots status"),
             # BotCommand("showconfig", "show config for selected exchange"),
             # BotCommand("startbots", "start all or selected bot"),
@@ -262,7 +262,7 @@ class TelegramBot(TelegramBotBase):
 
         self.helper.send_telegram_message(
             update,
-            "<i>Bot Commands Created</i>",
+            "<i>Очистка команд</i>",
             ReplyKeyboardRemove(),
             context=context,
         )
@@ -270,22 +270,23 @@ class TelegramBot(TelegramBotBase):
     def help(self, update, context):
         """Send a message when the command /help is issued."""
 
-        helptext = "<b>Information Command List</b>\n\n"
+        helptext = "<b>Список информационных команд</b>\n\n"
         helptext += (
-            "<b>/setcommands</b> - <i>add all commands to bot for easy access</i>\n"
+            "<b>/setcommands</b> - <i>Добавить все команды в бота для быстрого доступа</i>\n"
         )
-        helptext += "<b>/margins</b> - <i>show margins for open trade</i>\n"
-        helptext += "<b>/trades</b> - <i>show closed trades</i>\n"
-        helptext += "<b>/stats</b> - <i>display stats for market</i>\n\n"
-        helptext += "<b>Interactive Command List</b>\n\n"
-        helptext += "<b>/controlpanel</b> - <i>show interactive control buttons</i>\n"
-        helptext += "<b>/cleandata</b> - <i>check and remove any bad Json files</i>\n"
-        helptext += "<b>/addnew</b> - <i>start the requested pair</i>\n\n"
-        helptext += "<b>Market Scanner Commands</b>\n\n"
-        helptext += "<b>/scanner</b> - <i>start auto scan high volume markets and start bots</i>\n"
-        helptext += "<b>/addexception</b> - <i>add pair to scanner exception list</i>\n"
+        helptext += "<b>/margins</b> - <i>показать результаты открытых сделок</i>\n"
+        helptext += "<b>/trades</b> - <i>показать закрытые сделки</i>\n"
+        helptext += "<b>/stats</b> - <i>отобразить статистику рынка</i>\n\n"
+        helptext += "<b>список команд для взаимодействия</b>\n\n"
+        helptext += "<b>/controlpanel</b> - <i>показать панель управления</i>\n"
+        helptext += "<b>/cleandata</b> - <i>проверить и очистить все плохие Json файлы</i>\n"
+        helptext += "<b>/addnew</b> - <i>добавить запрошенную пару</i>\n\n"
+        helptext += "<b>настройки сканирования рынка</b>\n\n"
+        helptext += "<b>/scanner</b> - <i>начать автоматическое сканирование ликвидных рынков и запустить всех " \
+                    "ботов</i>\n "
+        helptext += "<b>/addexception</b> - <i>добавить пару в список исключений для сканирования</i>\n"
         helptext += (
-            "<b>/removeexception</b> - <i>remove pair from scanner exception list</i>\n"
+            "<b>/removeexception</b> - <i>убрать пару из списка исключений для сканирования</i>\n"
         )
 
         self.helper.send_telegram_message(update, helptext, context=context)
@@ -308,19 +309,19 @@ class TelegramBot(TelegramBotBase):
             return None
 
         self.helper.send_telegram_message(
-            update, "Select the exchange", markup, context=context
+            update, "Выберите биржу", markup, context=context
         )
 
         return CHOOSING
 
     def stats_exchange_received(self, update, context):
         """Ask which market stats are wanted for"""
-        if update.message.text.lower() == "done":
+        if update.message.text.lower() == "готово":
             return None
 
-        if update.message.text.lower() == "cancel":
+        if update.message.text.lower() == "отмена":
             self.helper.send_telegram_message(
-                update, "Operation Cancelled", ReplyKeyboardRemove(), context=context
+                update, "Операция отменена", ReplyKeyboardRemove(), context=context
             )
             return ConversationHandler.END
 
@@ -340,7 +341,7 @@ class TelegramBot(TelegramBotBase):
 
         self.helper.send_telegram_message(
             update,
-            "Which market/pair do you want stats for?",
+            "Для какого рынка/пары вы хотите посмотреть статистику?",
             ReplyKeyboardRemove(),
             context=context,
         )
@@ -349,12 +350,12 @@ class TelegramBot(TelegramBotBase):
 
     def stats_pair_received(self, update, context):
         """Show stats for selected exchange and market"""
-        if update.message.text.lower() == "done":
+        if update.message.text.lower() == "готово":
             return None
 
-        if update.message.text.lower() == "cancel":
+        if update.message.text.lower() == "отмена":
             self.helper.send_telegram_message(
-                update, "Operation Cancelled", ReplyKeyboardRemove(), context=context
+                update, "Операция отменена", ReplyKeyboardRemove(), context=context
             )
             return ConversationHandler.END
 
@@ -363,7 +364,7 @@ class TelegramBot(TelegramBotBase):
             if not p.match(update.message.text):
                 self.helper.send_telegram_message(
                     update,
-                    "Invalid market format",
+                    "Неверный формат рынка",
                     ReplyKeyboardRemove(),
                     context=context,
                 )
@@ -384,7 +385,7 @@ class TelegramBot(TelegramBotBase):
         self.pair = update.message.text
 
         self.helper.send_telegram_message(
-            update, "<i>Gathering Stats, please wait...</i>", context=context
+            update, "<i>Собираю статистику. Пожалуйста, подождите...</i>", context=context
         )
 
         output = self.helper.start_process(
@@ -431,12 +432,12 @@ class TelegramBot(TelegramBotBase):
             self.newbot_exchange(update, context)
             return None
 
-        r_keyboard = [["Yes", "No"]]
+        r_keyboard = [["Да", "Нет"]]
 
         mark_up = ReplyKeyboardMarkup(r_keyboard, one_time_keyboard=True)
 
         self.helper.send_telegram_message(
-            update, "Do you want to use any commandline overrides?", mark_up, context
+            update, "Хотите ли вы использовать переопределения командной строки?", mark_up, context
         )
 
         return MARKET
@@ -448,17 +449,17 @@ class TelegramBot(TelegramBotBase):
         ):  # pylint: disable=protected-access
             return None
 
-        if update.message.text == "No":
-            reply_keyboard = [["Yes", "No"]]
+        if update.message.text == "Нет":
+            reply_keyboard = [["Да", "Нет"]]
             mark_up = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
             self.helper.send_telegram_message(
-                update, "Do you want to save this?", mark_up, context
+                update, "Хотите сохранить?", mark_up, context
             )
             return SAVE
 
         self.helper.send_telegram_message(
             update,
-            "Tell me any other commandline overrides to use?",
+            "Скажите мне еще переопределения командной строки?",
             ReplyKeyboardRemove(),
             context,
         )
@@ -478,10 +479,10 @@ class TelegramBot(TelegramBotBase):
             b"\xe2\x80\x94".decode("utf-8"), "--"
         )
 
-        reply_keyboard = [["Yes", "No"]]
+        reply_keyboard = [["Да", "Нет"]]
         mark_up = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         self.helper.send_telegram_message(
-            update, "Do you want to save this?", mark_up, context
+            update, "Хотите сохранить?", mark_up, context
         )
 
         return SAVE
@@ -493,7 +494,7 @@ class TelegramBot(TelegramBotBase):
         ):  # pylint: disable=protected-access
             return None
         self.helper.logger.info("called newbot_save")
-        if update.message.text == "Yes":
+        if update.message.text == "Да":
             write_ok, try_count = False, 0
             while not write_ok and try_count <= 5:
                 try_count += 1
@@ -511,14 +512,14 @@ class TelegramBot(TelegramBotBase):
                             write_ok = self.helper.write_data()
                             if write_ok:
                                 self.helper.send_telegram_message(
-                                    update, f"{self.pair} saved \u2705", context=context
+                                    update, f"{self.pair} сохранена \u2705", context=context
                                 )
                             else:
                                 sleep(1)
                         else:
                             self.helper.send_telegram_message(
                                 update,
-                                f"{self.pair} already setup, no changes made.",
+                                f"{self.pair} уже существует, никаких изменений не произведено.",
                                 context=context,
                             )
                             write_ok = True
@@ -534,17 +535,17 @@ class TelegramBot(TelegramBotBase):
                         write_ok = self.helper.write_data()
                         if write_ok:
                             self.helper.send_telegram_message(
-                                update, f"{self.pair} saved \u2705", context=context
+                                update, f"{self.pair} сохранена \u2705", context=context
                             )
                         else:
                             sleep(1)
                 except Exception as err:  # pylint: disable=broad-except
                     print(err)
 
-        reply_keyboard = [["Yes", "No"]]
+        reply_keyboard = [["Да", "Нет"]]
         mark_up = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
         self.helper.send_telegram_message(
-            update, "Do you want to start this bot?", mark_up, context
+            update, "Вы хотите запустить этого бота?", mark_up, context
         )
 
         return START
@@ -556,10 +557,10 @@ class TelegramBot(TelegramBotBase):
         ):  # pylint: disable=protected-access
             return None
 
-        if update.message.text == "No":
+        if update.message.text == "Нет":
             self.helper.send_telegram_message(
                 update,
-                "Command Complete, have a nice day.",
+                "Команда выполнена, хорошего дня.",
                 ReplyKeyboardRemove(),
                 context,
             )
@@ -573,7 +574,7 @@ class TelegramBot(TelegramBotBase):
         ):
             self.helper.send_telegram_message(
                 update,
-                f"{self.pair} is already running, no action taken.",
+                f"{self.pair} уже запущена, никаких действий не предпринято.",
                 ReplyKeyboardRemove(),
                 context,
             )
@@ -581,13 +582,13 @@ class TelegramBot(TelegramBotBase):
             if startmethod != "scanner":
                 self.helper.send_telegram_message(
                     update,
-                    f"{self.pair} crypto bot Starting",
+                    f"{self.pair} бот запускается",
                     ReplyKeyboardRemove(),
                     context,
                 )
 
         self.helper.send_telegram_message(
-            update, "Command Complete, have a nice day.", ReplyKeyboardRemove(), context
+            update, "Команда выполнена, хорошего дня", ReplyKeyboardRemove(), context
         )
 
         return ConversationHandler.END
@@ -607,7 +608,7 @@ class TelegramBot(TelegramBotBase):
             print(err)
 
         self.helper.logger.error(
-            msg="Exception while handling an update:", exc_info=context.error
+            msg="Исключение во время обработки обновления:", exc_info=context.error
         )
         try:
             if "HTTPError" in context.error.args[0]:
@@ -677,14 +678,14 @@ class TelegramBot(TelegramBotBase):
                     sleep(1)
             self.helper.send_telegram_message(
                 update,
-                f"{self.pair} Added to Scanner Exception List \u2705",
+                f"{self.pair} добавлена в список исключений сканера \u2705",
                 ReplyKeyboardRemove(),
                 context,
             )
         else:
             self.helper.send_telegram_message(
                 update,
-                f"{self.pair} Already on exception list",
+                f"{self.pair} уже есть в списке исключений",
                 ReplyKeyboardRemove(),
                 context,
             )
@@ -736,7 +737,7 @@ class TelegramBot(TelegramBotBase):
         self.helper.clean_data_folder()
 
         self.actions.get_bot_info(None, context)
-        self.helper.send_telegram_message(update, "<b>Operation Complete</b>", context=context)
+        self.helper.send_telegram_message(update, "<b>Операция завершена</b>", context=context)
 
     def statstwo(self, update, context):
         jsonfiles = os.listdir(os.path.join(self.helper.datafolder, "telegram_data"))
@@ -753,7 +754,7 @@ class TelegramBot(TelegramBotBase):
                     exchange = "kucoin"
 
                 self.helper.send_telegram_message(
-                    update, "<i>Gathering Stats, please wait...</i>", context=context
+                    update, "<i>Собираю статистику, пожалуйста подождите...</i>", context=context
                 )
 
                 with open(
@@ -777,7 +778,7 @@ class TelegramBot(TelegramBotBase):
                 self.helper.send_telegram_message(update, output, context=context)
                 sleep(30)
                 self.helper.send_telegram_message(
-                    update, "Pausing before next set", context=context
+                    update, "Пауза перед следующим подходом", context=context
                 )
 
     def get_bot_list(self, update, context):
@@ -801,13 +802,13 @@ class TelegramBot(TelegramBotBase):
         if len(buttons) > 0:
             self.helper.send_telegram_message(
                 update,
-                "<b>Select a market</b>",
+                "<b>Выберите рынок</b>",
                 self.control.sort_inline_buttons(buttons, "bot"),
                 context=context,
             )
         else:
             self.helper.send_telegram_message(
-                update, "<b>No bots found.</b>", context=context
+                update, "<b>Ботов не найдено.</b>", context=context
             )
 
     def request(self, update, context):
@@ -817,7 +818,7 @@ class TelegramBot(TelegramBotBase):
             self.helper.load_config()
             key_markup = self.handler.get_request()
             self.helper.send_telegram_message(
-                update, "<b>PyCryptoBot Command Panel.</b>", key_markup, context
+                update, "<b>Панель управления</b>", key_markup, context
             )
 
 
@@ -864,7 +865,7 @@ def main():
                 )
             ],
         },
-        fallbacks=[("Done", botconfig.done)],
+        fallbacks=[("Готово", botconfig.done)],
     )
 
     conversation_stats = ConversationHandler(
@@ -881,7 +882,7 @@ def main():
                 )
             ],
         },
-        fallbacks=[("Done", botconfig.done)],
+        fallbacks=[("Готово", botconfig.done)],
     )
 
     conversation_newbot = ConversationHandler(
@@ -896,7 +897,7 @@ def main():
             SAVE: [MessageHandler(Filters.text, botconfig.newbot_save)],
             START: [MessageHandler(Filters.text, botconfig.newbot_start)],
         },
-        fallbacks=[("Done", botconfig.done)],
+        fallbacks=[("Готово", botconfig.done)],
     )
 
     dp.add_handler(conversation_stats)
@@ -912,7 +913,7 @@ def main():
     botconfig.helper.logger.info("Telegram Bot is listening")
     botconfig.setcommands(None, None)
     botconfig.updater.bot.send_message(
-        text="Online and ready.", chat_id=botconfig.helper.config["telegram"]["user_id"]
+        text="Бот готов к работе.", chat_id=botconfig.helper.config["telegram"]["user_id"]
     )
 
     if botconfig.helper.autostart:

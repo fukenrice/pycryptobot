@@ -95,7 +95,7 @@ class TelegramControl:
             keyboard.append(
                 [
                     InlineKeyboardButton(
-                        "\U000025C0 Back",
+                        "\U000025C0 Назад",
                         callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                     )
                 ]
