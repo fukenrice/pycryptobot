@@ -28,10 +28,10 @@ class TelegramActions:
 
         result = (
             f"{light_icon} <b>{market}</b> (<i>{self.helper.data['exchange']}</i>)\n"
-            f"{margin_icon} Margin: {self.helper.data['margin']}  "
+            f"{margin_icon} Результаты: {self.helper.data['margin']}  "
             f"\U0001F4B0 P/L: {self.helper.data['delta']}\n"
-            f"TSL Trg: {self.helper.data['trailingstoplosstriggered']}  "
-            f"TSL Change: {float(self.helper.data['change_pcnt_high']).__round__(4)}\n"
+            f"TSL триггер: {self.helper.data['trailingstoplosstriggered']}  "
+            f"TSL изменение: {float(self.helper.data['change_pcnt_high']).__round__(4)}\n"
             # f"TPL Trg: {self.helper.data['preventlosstriggered']}  "
             # f"TPL Change: {float(self.helper.data['change_pcnt_high']).__round__(4)}\n"
         )
@@ -69,7 +69,7 @@ class TelegramActions:
     def start_open_orders(self, update, context):
         """Start bots for open trades (data.json)"""
         self.helper.logger.info("called start_open_orders")
-        self.helper.send_telegram_message(update, "<b>Starting markets with open trades..</b>", context=context, new_message=False)
+        self.helper.send_telegram_message(update, "<b>Запускаю рынки с открытыми сделками..</b>", context=context, new_message=False)
         self.helper.read_data()
         for market in self.helper.data["opentrades"]:
             if not self.helper.is_bot_running(market):
@@ -80,7 +80,7 @@ class TelegramActions:
                     "telegram-open",
                 )
             sleep(10)
-        self.helper.send_telegram_message(update, "<i>Markets have been started</i>", context=context)
+        self.helper.send_telegram_message(update, "<i>Рынки не запущены</i>", context=context)
         sleep(1)
         self.get_bot_info(None, None)
 
@@ -93,7 +93,8 @@ class TelegramActions:
                 self.helper.write_data(market_override)
                 self.helper.send_telegram_message(
                     update,
-                    f"Selling: {market_override.replace('.json','')}" "\n<i>Please wait for sale notification...</i>",
+                    f"Selling: {market_override.replace('.json','')}" "\n<i>Пожалуйста, дождитесь уведомления о "
+                    "продаже...</i>",
                     context=context,
                     new_message=False,
                 )
@@ -103,7 +104,7 @@ class TelegramActions:
         self.helper.logger.info("called sell_response - %s", query.data)
 
         if query.data.__contains__("all"):
-            self.helper.send_telegram_message(update, "<b><i>Initiating sell orders..</i></b>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, "<b><i>Запускаю ордера на продажу..</i></b>", context=context, new_message=False)
             tg_message = ""
             for market in self.helper.get_active_bot_list("active"):
                 if not self.helper.read_data(market):
@@ -116,7 +117,7 @@ class TelegramActions:
                 sleep(0.2)
             self.helper.send_telegram_message(
                 update,
-                f"<b>{tg_message}</b>\n<i>Please wait for sale notification...</i>",
+                f"<b>{tg_message}</b>\n<i>Пожалуйста, дождитесь уведомления о продаже...</i>",
                 context=context,
             )
         else:
@@ -126,7 +127,7 @@ class TelegramActions:
                 self.helper.write_data(query.data.replace("confirm_sell_", ""))
                 self.helper.send_telegram_message(
                     update,
-                    f"Selling: {query.data.replace('confirm_sell_', '').replace('.json','')}" "\n<i>Please wait for sale notification...</i>",
+                    f"Selling: {query.data.replace('confirm_sell_', '').replace('.json','')}" "\n<i>Пожалуйста, дождитесь уведомления о продаже...</i>",
                     context=context,
                     new_message=False,
                 )
@@ -141,7 +142,7 @@ class TelegramActions:
                 self.helper.write_data(market_override)
                 self.helper.send_telegram_message(
                     update,
-                    f"Buying: {market_override.replace('.json','')}" "\n<i>Please wait for buy notification...</i>",
+                    f"Buying: {market_override.replace('.json','')}" "\n<i>Пожалуйста, дождитесь уведомления о покупке...</i>",
                     context=context,
                     new_message=False,
                 )
@@ -151,7 +152,7 @@ class TelegramActions:
         self.helper.logger.info("called buy_response - %s", query.data)
 
         if query.data == "all":
-            self.helper.send_telegram_message(update, "<b><i>Initiating buy orders..</i></b>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, "<b><i>Создаю ордера на покупку..</i></b>", context=context, new_message=False)
             tg_message = ""
             for market in self.helper.get_active_bot_list("active"):
                 if not self.helper.read_data(market):
@@ -164,7 +165,7 @@ class TelegramActions:
                 sleep(0.2)
             self.helper.send_telegram_message(
                 update,
-                f"<b>{tg_message}</b>\n<i>Please wait for buy notification...</i>",
+                f"<b>{tg_message}</b>\n<i>Пожалуйста, дождитесь уведомления о покупке...</i>",
                 context=context,
             )
         else:
@@ -174,7 +175,7 @@ class TelegramActions:
                 self.helper.write_data(query.data.replace("confirm_buy_", ""))
                 self.helper.send_telegram_message(
                     update,
-                    f"Buying: {query.data.replace('confirm_buy_', '').replace('.json','')}" "\n<i>Please wait for buy notification...</i>",
+                    f"Buying: {query.data.replace('confirm_buy_', '').replace('.json','')}" "\n<i>Пожалуйста, дожитесь уведомления о покупке...</i>",
                     context=context,
                     new_message=False,
                 )
@@ -208,7 +209,7 @@ class TelegramActions:
             last_modified = datetime.now() - datetime.fromtimestamp(os.path.getmtime(os.path.join(self.helper.datafolder, "telegram_data", f"{file}.json")))
             icon = "\U0001F6D1"  # red dot
             if last_modified.seconds > 90 and last_modified.seconds != 86399:
-                output = f"{output} {icon} <b>Status</b>: <i>defaulted</i>"
+                output = f"{output} {icon} <b>Статус</b>: <i>по-умолчанию</i>"
             elif "botcontrol" in self.helper.data and "status" in self.helper.data["botcontrol"]:
                 if self.helper.data["botcontrol"]["status"] == "active":
                     icon = "\U00002705"  # green tick
@@ -216,10 +217,10 @@ class TelegramActions:
                     icon = "\U000023F8"  # pause icon
                 if self.helper.data["botcontrol"]["status"] == "exit":
                     icon = "\U0000274C"  # stop icon
-                output = f"{output} {icon} <b>Status</b>: <i> {self.helper.data['botcontrol']['status']}</i>"
-                output = f"{output} \u23F1 <b>Uptime</b>: <i> {self.helper.get_uptime()}</i>\n"
+                output = f"{output} {icon} <b>Статус</b>: <i> {self.helper.data['botcontrol']['status']}</i>"
+                output = f"{output} \u23F1 <b>Аптайм</b>: <i> {self.helper.get_uptime()}</i>\n"
             else:
-                output = f"{output} {icon} <b>Status</b>: <i>stopped</i> "
+                output = f"{output} {icon} <b>Статус</b>: <i>остановлен</i> "
 
             if count == 1:
                 # if update is not None or context is not None:
@@ -232,20 +233,20 @@ class TelegramActions:
         if count == 0:
             self.helper.send_telegram_message(
                 update,
-                f"<b>Bot Count ({count})</b>",
+                f"<b>Количество ботов ({count})</b>",
                 context=context,
                 new_message=False,
             )
         else:
-            self.helper.send_telegram_message(update, f"<b>Bot Count ({count})</b>", context=context)
+            self.helper.send_telegram_message(update, f"<b>Количество ботов ({count})</b>", context=context)
 
-        return f"Bot Count ({count})"
+        return f"Количество ботов ({count})"
 
     def get_margins(self, update, option):
         """Get margins"""
         self.helper.send_telegram_message(
             update,
-            f"<i>Getting current {'margins' if option == 'orders' else 'active pairs' if option == 'pairs' else 'margins and active pairs'}..</i>",
+            f"<i>Получаю текущие {'результаты' if option == 'orders' else 'активные пары' if option == 'pairs' else 'результаты и активные пары'}..</i>",
             new_message=False,
         )
         closed_output = []
@@ -274,14 +275,14 @@ class TelegramActions:
                 self.helper.send_telegram_message(update, output)
                 sleep(0.5)
         elif option in ("orders", "all") and open_count == 0:
-            self.helper.send_telegram_message(update, "<b>No open orders found.</b>")
+            self.helper.send_telegram_message(update, "<b>Не найдено открытых ордеров.</b>")
 
         if option in ("pairs", "all") and closed_count > 0:
             for output in closed_output:
                 self.helper.send_telegram_message(update, output)
                 sleep(1)
         elif option in ("pairs", "all") and closed_count == 0:
-            self.helper.send_telegram_message(update, "<b>No active pairs found.</b>")
+            self.helper.send_telegram_message(update, "<b>Не найдено активных пар.</b>")
 
     def start_market_scan(
         self,
@@ -321,7 +322,7 @@ class TelegramActions:
                 if os.path.exists(os.path.join(self.helper.datafolder, "telegram_data", f"{ex}_bulkstart.csv")):
                     self.helper.send_telegram_message(
                         update,
-                        f"<i>Found bulk load CSV file for {ex}... Loading pairs</i>",
+                        f"<i>Найден CSV-файл массовой загрузки для {ex}... Загружаю пары</i>",
                         context=context,
                     )
                     try:
@@ -340,7 +341,7 @@ class TelegramActions:
                                     # Start the process disregarding bot limits for the moment
                                     self.helper.send_telegram_message(
                                         update,
-                                        f"Bulk Starting {row['market']} on {ex}...",
+                                        f"Запускаю {row['market']} на {ex}...",
                                         context=context,
                                     )
                                     self.helper.start_process(row["market"], ex, "", "scanner")
@@ -353,22 +354,22 @@ class TelegramActions:
 
         if scanmarkets:
             if bool(self.helper.settings["notifications"]["enable_screener"]):
-                reply = "<i>Gathering market data\nplease wait...</i> \u23F3"
+                reply = "<i>Получаю данные о рынке\nпожалуйста, подождите...</i> \u23F3"
                 self.helper.send_telegram_message(update, reply, context=context)
             try:
                 self.helper.logger.info("Starting Market Scan")
                 subprocess.getoutput(f"python3 {scanner_script_file}")
             except Exception as err:
-                self.helper.send_telegram_message(update, "<b>scanning failed.</b>", context=context)
+                self.helper.send_telegram_message(update, "<b>Сканирование провелено.</b>", context=context)
                 self.helper.logger.error(err)
                 raise
 
             if bool(self.helper.settings["notifications"]["enable_screener"]):
-                self.helper.send_telegram_message(update, "<b>Scan Complete.</b>", context=context)
+                self.helper.send_telegram_message(update, "<b>Сканирование завершено.</b>", context=context)
 
         # Watchdog process - check for hung bots and force restart them
         if bool(self.helper.settings["notifications"]["enable_screener"]):
-            self.helper.send_telegram_message(update, "<i>Fido checking for hung bots..</i>", context=context)
+            self.helper.send_telegram_message(update, "<i>Ищу зависших ботов..</i>", context=context)
 
         self.helper.logger.debug("Fido checking for hung bots..")
 
@@ -382,7 +383,7 @@ class TelegramActions:
             if bool(self.helper.settings["notifications"]["enable_screener"]):
                 self.helper.send_telegram_message(
                     update,
-                    f"Restarting {file} as it appears to have hung...",
+                    f"Перезапускаю {file}, так как похоже, что он завис...",
                     context=context,
                 )
 
@@ -392,7 +393,7 @@ class TelegramActions:
 
         if not startbots:
             if bool(self.helper.settings["notifications"]["enable_screener"]):
-                self.helper.send_telegram_message(update, "<b>Operation Complete (0 started)</b>", context=context)
+                self.helper.send_telegram_message(update, "<b>Операция завершена (0 запущено)</b>", context=context)
             return True
 
         # Check to see if the bot would be restarted anyways from the scanner
@@ -419,7 +420,7 @@ class TelegramActions:
                 except Exception:
                     pass
         if bool(self.helper.settings["notifications"]["enable_screener"]):
-            self.helper.send_telegram_message(update, "<i>stopping bots..</i>", context=context)
+            self.helper.send_telegram_message(update, "<i>Останавливаю ботов..</i>", context=context)
 
         self.helper.logger.debug("stopping bots")
         active_bots_list = self.helper.get_active_bot_list()
@@ -436,7 +437,7 @@ class TelegramActions:
                 if bool(self.helper.settings["notifications"]["enable_screener"]):
                     self.helper.send_telegram_message(
                         update,
-                        f"Not stopping {file} - in scanner list, or has open order...",
+                        f"Не останавлива {file} - в списке для сканера или папка открыта...",
                         context=context,
                     )
 
@@ -453,7 +454,7 @@ class TelegramActions:
             exchange_bots_started = self.helper.get_exchange_bot_runing_count(ex)
             for quote in config[ex]["quote_currency"]:
                 if bool(self.helper.settings["notifications"]["enable_screener"]):
-                    self.helper.send_telegram_message(update, f"Starting {ex} ({quote}) bots...", context=context)
+                    self.helper.send_telegram_message(update, f"Запускаю {ex} ({quote}) ботов...", context=context)
 
                 self.helper.logger.info("starting %s - (%s) bots", ex, quote)
                 if not os.path.isfile(
@@ -496,7 +497,7 @@ class TelegramActions:
                             if bool(self.helper.settings["notifications"]["enable_screener"]):
                                 self.helper.send_telegram_message(
                                     update,
-                                    f"Ignoring {row} {ex} ({quote}) " "Leverage Pairs (enableleverage is disabled)...",
+                                    f"Игнорирую {row} {ex} ({quote}) " "Пары с плечом (enableleverage выключено)...",
                                     context=context,
                                 )
                             msg_cnt += 1
@@ -504,7 +505,7 @@ class TelegramActions:
                         continue
 
                     if row in market_exceptions:
-                        outputmsg = outputmsg + f"*** {row} found on scanner exception list ***\n"
+                        outputmsg = outputmsg + f"*** {row} найден в списке исключений для сканера ***\n"
                     else:
                         if data[row]["atr72_pcnt"] is not None:
                             if data[row]["atr72_pcnt"] >= self.helper.config["scanner"]["atr72_pcnt"]:
@@ -534,8 +535,8 @@ class TelegramActions:
         self.helper.send_telegram_message(
             update,
             f"<b>{scanner_config_file.replace('.json', '').capitalize()} "
-            f"Operation Complete.</b><i>\n- {total_bots_started} started"
-            f"\n- {active_at_start + total_bots_started} running</i>",
+            f"Операция завершена.</b><i>\n- {total_bots_started} started"
+            f"\n- {active_at_start + total_bots_started} запущено</i>",
             context=context,
         )
 
@@ -558,7 +559,7 @@ class TelegramActions:
 
         self.helper.send_telegram_message(
             update,
-            f"<i>Deleted {str(query.data).replace('delete_', '')} crypto bot</i>",
+            f"<i>Удален {str(query.data).replace('delete_', '')} бот</i>",
         )
 
     def remove_exception_callback(self, update):
@@ -577,7 +578,7 @@ class TelegramActions:
 
         self.helper.send_telegram_message(
             update,
-            f"<i>Removed {str(query.data).replace('delexcep_', '')} from exception list. bot</i>",
+            f"<i>{str(query.data).replace('delexcep_', '')} Удален из списка исключений. бот</i>",
         )
 
     def get_closed_trades(self, update, days):
@@ -595,9 +596,9 @@ class TelegramActions:
             negative_counter = 0
 
             if days == 99:
-                self.helper.send_telegram_message(update, "<i>Getting all trades summary..</i>", new_message=False)
+                self.helper.send_telegram_message(update, "<i>Подгружаю статистику всех сделок..</i>", new_message=False)
             else:
-                self.helper.send_telegram_message(update, f"<i>Getting summary of trades for last {days} day(s)..</i>", new_message=False)
+                self.helper.send_telegram_message(update, f"<i>Получаю статистику всех сделок за последние {days} дней..</i>", new_message=False)
 
             for trade_datetime in self.helper.data["trades"]:
                 if datetime.strptime(trade_datetime, "%Y-%m-%d %H:%M:%S").isoformat() < now.isoformat():
@@ -621,7 +622,7 @@ class TelegramActions:
                     output = output + f"<b>{self.helper.data['trades'][trade_datetime]['pair']}</b>\n{trade_datetime}"
                     output = (
                         output
-                        + f"\n<i>Sold at: {self.helper.data['trades'][trade_datetime]['price']}   Margin: {self.helper.data['trades'][trade_datetime]['margin']}</i>\n"
+                        + f"\n<i>Продан на: {self.helper.data['trades'][trade_datetime]['price']}   Результаты: {self.helper.data['trades'][trade_datetime]['margin']}</i>\n"
                     )
                     if days != 99:
                         if output != "":
@@ -633,17 +634,17 @@ class TelegramActions:
                             sleep(0.5)
 
             if trade_count == 0 and trade_counter == 0:
-                self.helper.send_telegram_message(update, "<b>No closed trades found</b>", new_message=False)
+                self.helper.send_telegram_message(update, "<b>Не найдено закрытых сделок</b>", new_message=False)
                 return "No closed trades found"
 
             if days > 0:
                 summary = (
-                    f"First Recorded Date: <b>{first_trade_date}</b>\n"
-                    f"Last Recorded Date: <b>{last_trade_date}</b>\n\n"
-                    f"Profit: <b>{round(margin_positive,2)}%</b>  from (<b>{positive_counter}</b>) trades\n"
-                    f"Loss: <b>{round(margin_negative,2)}%</b>  from (<b>{negative_counter}</b>) trades\n"
-                    f"Total: <b>{round(margin_calculation,2)}%</b>  from (<b>{trade_counter}</b>) trades\n"
-                    f"Average: <b>{round((margin_calculation/trade_counter),2)}%</b>  per trade"
+                    f"Первая записанная дата: <b>{first_trade_date}</b>\n"
+                    f"Последняя записанная дата: <b>{last_trade_date}</b>\n\n"
+                    f"Прибыль: <b>{round(margin_positive,2)}%</b>  от (<b>{positive_counter}</b>) сделок\n"
+                    f"Убыток: <b>{round(margin_negative,2)}%</b>  от (<b>{negative_counter}</b>) сделок\n"
+                    f"Всего: <b>{round(margin_calculation,2)}%</b>  от (<b>{trade_counter}</b>) сделок\n"
+                    f"В среднем: <b>{round((margin_calculation/trade_counter),2)}%</b>  за сделку"
                 )
 
                 self.helper.send_telegram_message(update, summary)

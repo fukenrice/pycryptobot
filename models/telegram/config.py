@@ -209,7 +209,7 @@ class ConfigEditor:
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ]
@@ -257,7 +257,7 @@ class ConfigEditor:
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    "Reload all running bots",
+                    "Перезагрузить всех запущенных ботов",
                     callback_data=self.helper.create_callback_data(callbacktags.RELOADCONFIG[0]),
                 )
             ]
@@ -265,14 +265,14 @@ class ConfigEditor:
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ]
         )
 
         self.helper.send_telegram_message(
-            update, "<b>Scanner Config Options.</b>", InlineKeyboardMarkup(keyboard, one_time_keyboard=True), context, new_message=False
+            update, "<b>Настройки сканера.</b>", InlineKeyboardMarkup(keyboard, one_time_keyboard=True), context, new_message=False
         )
 
     def disable_option(self, exchange, parameter):
@@ -356,7 +356,7 @@ class ConfigEditor:
         keyboard.append(
             [
                 InlineKeyboardButton(
-                    "\U000025C0 Back",
+                    "\U000025C0 Назад",
                     callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                 )
             ]

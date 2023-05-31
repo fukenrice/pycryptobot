@@ -63,7 +63,7 @@ class SettingsEditor:
         self._read_config()
 
         notifications = {
-            "enable_screener": "Screener/Scanner",
+            "enable_screener": "Скринер/Сканер",
             # "enable_scanner" : "Scanner",
             # "enable_start" : "Bot Start",
             # "enable_stop" : "Bot Stop",
@@ -109,7 +109,7 @@ class SettingsEditor:
 
         self.helper.send_telegram_message(
             update,
-            "<b>Notification Options:</b>",
+            "<b>Настройки уведомлений:</b>",
             InlineKeyboardMarkup(keyboard, one_time_keyboard=True), new_message=False
         )
 

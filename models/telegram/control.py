@@ -45,12 +45,12 @@ class TelegramControl:
         if len(buttons) > 0:
             self.helper.send_telegram_message(
                 update,
-                f"<b>What do you want to {call_back_tag[1]}?</b>",
+                f"<b>Что вы хотите {call_back_tag[1]}?</b>",
                 self.sort_inline_buttons(buttons, f"{call_back_tag[0]}"),
                 new_message=False,
             )
         else:
-            self.helper.send_telegram_message(update, f"<b>No {status} bots found.</b>", new_message=False)
+            self.helper.send_telegram_message(update, f"<b>Ботов со статусом {status} не найдено.</b>", new_message=False)
 
     def sort_inline_buttons(self, buttons: list, call_back_tag):
         """Sort buttons for inline keyboard display"""
@@ -60,7 +60,7 @@ class TelegramControl:
                 keyboard = [
                     [
                         InlineKeyboardButton(
-                            "All",
+                            "Все",
                             callback_data=self.helper.create_callback_data(call_back_tag, "", "all"),
                         )
                     ]  # f"{call_back_tag}_all")]
@@ -86,7 +86,7 @@ class TelegramControl:
                 keyboard.append(
                     [
                         InlineKeyboardButton(
-                            "All (w/o open order)",
+                            "Все (без открытых ордеров)",
                             callback_data=self.helper.create_callback_data(call_back_tag, "", "allclose"),  # f"{call_back_tag}_allclose",
                         )
                     ]
@@ -95,7 +95,7 @@ class TelegramControl:
             keyboard.append(
                 [
                     InlineKeyboardButton(
-                        "\U000025C0 Back",
+                        "\U000025C0 Назад",
                         callback_data=self.helper.create_callback_data(callbacktags.BACK[0]),
                     )
                 ]
@@ -107,20 +107,20 @@ class TelegramControl:
         """Run requested bot action"""
         mode = call_back_tag.capitalize()
         if market_override != "":
-            self.helper.send_telegram_message(update, f"<i>{mode} bots</i>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, f"<i>{mode} ботов</i>", context=context, new_message=False)
             self.helper.stop_running_bot(market_override, state, True)
             return
 
         query = update.callback_query
 
         if query.data.__contains__("allclose") or query.data.__contains__("all"):
-            self.helper.send_telegram_message(update, f"<i>{mode} bots</i>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, f"<i>{mode} ботов</i>", context=context, new_message=False)
 
             for pair in self.helper.get_active_bot_list(status):
                 self.helper.stop_running_bot(pair, state, False if query.data.__contains__("allclose") else True)
                 sleep(1)
         else:
-            self.helper.send_telegram_message(update, f"<i>{mode} bots</i>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, f"<i>{mode} ботов</i>", context=context, new_message=False)
             self.helper.stop_running_bot(str(query.data).replace(f"{call_back_tag}_", ""), state, True)
         sleep(5)
         # self.helper.send_telegram_message(
@@ -144,14 +144,14 @@ class TelegramControl:
             reply_markup = self.sort_inline_buttons(buttons, "start")
             self.helper.send_telegram_message(
                 update,
-                "<b>What crypto bots do you want to start?</b>",
+                "<b>Какого бота вы хотите запустить??</b>",
                 reply_markup,
                 new_message=False,
             )
         else:
             self.helper.send_telegram_message(
                 update,
-                "<b>Nothing on your start list</b>\n<i>Use /addnew to add a market.</i>",
+                "<b>Ничего не найдено в списке для запуска</b>\n<i>Используйте /addnew чтобы добавить пару.</i>",
                 new_message=False,
             )
 
@@ -161,7 +161,7 @@ class TelegramControl:
         if market_override != "":
             self.helper.send_telegram_message(
                 update,
-                f"<i>Starting {market_override} crypto bot</i>",
+                f"<i>Запускаю {market_override} бота</i>",
                 context=context,
                 new_message=False,
             )
@@ -173,7 +173,7 @@ class TelegramControl:
             else:
                 self.helper.send_telegram_message(
                     update,
-                    f"{market_override} is already running, no action taken.",
+                    f"{market_override} уже запущен.",
                     context=context,
                 )
             return
@@ -183,25 +183,25 @@ class TelegramControl:
         self.helper.read_data()
 
         if "all" in query.data:  # start all bots
-            self.helper.send_telegram_message(update, "<b>Starting all bots</b>", context=context, new_message=False)
+            self.helper.send_telegram_message(update, "<b>Запускаю всех ботов</b>", context=context, new_message=False)
 
             for market in self.helper.data["markets"]:
                 if not self.helper.is_bot_running(market):
                     overrides = self.helper.data["markets"][market]["overrides"]
-                    self.helper.send_telegram_message(update, f"<i>Starting {market} crypto bot</i>", context=context)
+                    self.helper.send_telegram_message(update, f"<i>Запускаю {market} бота</i>", context=context)
                     self.helper.start_process(market, self.helper.get_running_bot_exchange(market), overrides)
                     sleep(10)
                     self.helper.read_data()
                 else:
                     self.helper.send_telegram_message(
                         update,
-                        f"{market} is already running, no action taken.",
+                        f"{market} уже запущен.",
                         context=context,
                     )
         else:  # start single bot
             self.helper.send_telegram_message(
                 update,
-                f"<i>Starting {str(query.data).replace('start_', '')} crypto bot</i>",
+                f"<i>Запускаю {str(query.data).replace('start_', '')} бота</i>",
                 context=context,
                 new_message=False,
             )
@@ -212,10 +212,10 @@ class TelegramControl:
             else:
                 self.helper.send_telegram_message(
                     update,
-                    f"{str(query.data).replace('start_', '')} is already running, no action taken.",
+                    f"{str(query.data).replace('start_', '')} уже запущен.",
                     context=context,
                 )
-        self.helper.send_telegram_message(update, "<b>Starting bots complete</b>", context=context)
+        self.helper.send_telegram_message(update, "<b>Запуск ботов произведен успешно</b>", context=context)
 
     def ask_stop_bot_list(self, update: Update):
         """Get bot stop list"""
@@ -224,7 +224,7 @@ class TelegramControl:
     def stop_bot_response(self, update: Update, context, market_override=""):
         """Stop bot list response"""
         self.action_bot_response(update, "stop", "exit", context, "active", market_override)
-        self.helper.send_telegram_message(update, "<b>Stop bots complete</b>", context=context)
+        self.helper.send_telegram_message(update, "<b>Остановка ботов завершена.</b>", context=context)
 
     def ask_pause_bot_list(self, update: Update):
         """Get pause bot list"""
@@ -233,7 +233,7 @@ class TelegramControl:
     def pause_bot_response(self, update: Update, context, market_override=""):
         """Pause bot list response"""
         self.action_bot_response(update, "pause", "pause", context, "active", market_override)
-        self.helper.send_telegram_message(update, "<b>Pausing bots complete</b>", context=context)
+        self.helper.send_telegram_message(update, "<b>Боты поставлены на паузу</b>", context=context)
 
     def ask_resume_bot_list(self, update: Update):
         """Get resume bot list"""
@@ -242,7 +242,7 @@ class TelegramControl:
     def resume_bot_response(self, update: Update, context, market_override=""):
         """Resume bot list response"""
         self.action_bot_response(update, "resume", "start", context, "paused", market_override)
-        self.helper.send_telegram_message(update, "<b>Resuming bots complete</b>", context=context)
+        self.helper.send_telegram_message(update, "<b>Боты сняты с паузы</b>", context=context)
 
     def ask_sell_bot_list(self, update):
         """Manual sell request (asks which coin to sell)"""
@@ -291,7 +291,7 @@ class TelegramControl:
             sleep(10)
 
         self.helper.send_telegram_message(None, f"{restart_list} re-started")
-        self.helper.send_telegram_message(update, "<b>Restarting bots complete</b>")
+        self.helper.send_telegram_message(update, "<b>Перезапуск ботов выполнен</b>")
 
     #     def ask_exchange_options(self, update: Update):
     #         ''' Get available exchanges from config '''
@@ -343,7 +343,7 @@ class TelegramControl:
 
         self.helper.send_telegram_message(
             update,
-            "<b>What crypto bots do you want to delete?</b>",
+            "<b>Какого бота вы хотите удалить?</b>",
             reply_markup,
             context=context,
         )
@@ -385,7 +385,7 @@ class TelegramControl:
 
         self.helper.send_telegram_message(
             update,
-            "<b>What do you want to remove from the scanner exception list?</b>",
+            "<b>Что вы хотите удалить из исключений сканера?</b>",
             reply_markup,
             context=context,
         )
