@@ -448,7 +448,7 @@ class TelegramHelper:
 
             return resp
 
-        command = "python3 pycryptobot.py"
+        command = "python pycryptobot.py"
         command = f"{command} --startmethod {startmethod}"
 
         if pair != "":
